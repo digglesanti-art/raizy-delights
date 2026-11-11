@@ -82,7 +82,7 @@ function cakeStage(item, cls) {
   // backdrop, floor and contact shadow are separate layers; the cake on top is the untouched cut-out
   const cake = item.logo
     ? `<img class="stage-logo" src="${LOGO}" alt="Raizy Delight's logo" loading="lazy">`
-    : PHOTO[item.img] ? `<img class="stage-photo" src="${PHOTO[item.img]}" alt="${item.name}" loading="lazy">`
+    : PHOTO[item.img] ? `<img class="stage-photo-bg" src="${PHOTO[item.img]}" alt="" aria-hidden="true" loading="lazy"><img class="stage-photo" src="${PHOTO[item.img]}" alt="${item.name}" loading="lazy">`
     : `<img class="stage-cake" src="${cutout(item.img)}" alt="${item.name}" loading="lazy">`;
   return `<div class="stage ${cls || ""}${item.img && PHOTO[item.img] ? " has-photo" : ""}" data-tone="${toneOf(item)}"><span class="stage-floor"></span><span class="stage-shadow"></span>${cake}</div>`;
 }
@@ -403,8 +403,9 @@ const heroStage = document.getElementById("hero-stage");
 if (heroStage) {
   heroStage.innerHTML = HERO.map(([key, tone, blobs], i) => {
     const { item } = findItem(key);
-    const src = cutout(item.img);
-    return `<div class="hs-slide hs-${i + 1}" data-tone="${tone}" data-key="${key}" style="--b1:${blobs[0]};--b2:${blobs[1]};--b3:${blobs[2]}">
+    const isPhoto = !!PHOTO[item.img];
+    const src = isPhoto ? PHOTO[item.img] : cutout(item.img);
+    return `<div class="hs-slide hs-${i + 1}${isPhoto ? " is-photo" : ""}" data-tone="${tone}" data-key="${key}" style="--b1:${blobs[0]};--b2:${blobs[1]};--b3:${blobs[2]}">
       <span class="hs-blob hs-blob1"></span><span class="hs-blob hs-blob2"></span><span class="hs-blob hs-blob3"></span>
       <img class="hs-glow" src="${src}" alt="" aria-hidden="true">
       <span class="hs-shadow"></span>
