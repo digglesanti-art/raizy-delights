@@ -67,23 +67,29 @@ const DAIRY = [
   { name: "Big Babka", price: "45,00", logo: true },
 ];
 
-function cardHTML(item, list) {
+/* ---------- catalog rendering ---------- */
+const LIST_OF = { parve: PARVE, dairy: DAIRY };
+
+function cardHTML(item, list, idx) {
   const media = item.logo
     ? `<div class="card-logo ${list}"><img src="${LOGO}" alt="Raizy Delight's logo"></div>`
     : `<img class="card-img" src="${item.img}" alt="${item.name}" loading="lazy">`;
   const note = item.note ? `<span class="card-note">(${item.note})</span>` : "";
   const name = item.name.replace(/\//g, "/<wbr>");
-  return `<article class="card">${media}
+  return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">${media}
     <div class="card-body">
       <div class="card-name">${name}${note}</div>
-      <div class="card-price">${item.price}</div>
+      <div class="card-side">
+        <div class="card-price">${item.price}</div>
+        <div class="add-chip">+ Add</div>
+      </div>
     </div>
   </article>`;
 }
 
 function render(list, items) {
   document.getElementById("grid-" + list).innerHTML =
-    items.map((i) => cardHTML(i, list)).join("");
+    items.map((i, idx) => cardHTML(i, list, idx)).join("");
 }
 
 render("parve", PARVE);
@@ -118,3 +124,249 @@ if (sessionStorage.getItem("splash-seen")) {
     if (s) s.remove();
   }, 2200);
 }
+
+/* ---------- ordering ---------- */
+// Order destination email. Orders are sent as a prefilled email from the
+// customer's own mail app to this address.
+const ORDER_EMAIL = "raizy.freund97@gmail.com";
+
+const cart = new Map(); // key -> { item, list, qty }
+let current = null;     // item being edited in the sheet
+
+function findItem(key) {
+  const [list, idx] = [key.startsWith("parve") ? "parve" : "dairy", +key.split("-").pop()];
+  return { item: LIST_OF[list][idx], list };
+}
+
+function unitInfo(item) {
+  const p = item.price.trim();
+  let m = p.match(/^€\s*([\d,]+)$/);
+  if (m) return { amt: parseFloat(m[1].replace(",", ".")), pack: null };
+  m = p.match(/^(\d+)\s*for\s*€\s*([\d,]+)$/);
+  if (m) return { amt: parseFloat(m[2].replace(",", ".")), pack: "pack of " + m[1] };
+  m = p.match(/^(\d+)\s*pcs\s*([\d,]+)$/);
+  if (m) return { amt: parseFloat(m[2].replace(",", ".")), pack: "pack of " + m[1] };
+  m = p.match(/^([\d,]+)$/);
+  if (m) return { amt: parseFloat(m[1].replace(",", ".")), pack: null };
+  return { amt: 0, pack: null };
+}
+
+function fmt(n) { return "€ " + n.toFixed(2).replace(".", ","); }
+
+function cartTotal() {
+  let t = 0;
+  cart.forEach(({ item, qty }) => { t += unitInfo(item).amt * qty; });
+  return t;
+}
+function cartCount() {
+  let c = 0;
+  cart.forEach(({ qty }) => { c += qty; });
+  return c;
+}
+
+function saveCart() {
+  const o = {};
+  cart.forEach((v, k) => { o[k] = v.qty; });
+  localStorage.setItem("rd-cart", JSON.stringify(o));
+}
+function loadCart() {
+  try {
+    const o = JSON.parse(localStorage.getItem("rd-cart") || "{}");
+    Object.entries(o).forEach(([k, qty]) => {
+      const { item, list } = findItem(k);
+      if (item && qty > 0) cart.set(k, { item, list, qty });
+    });
+  } catch (e) { /* ignore */ }
+}
+
+document.body.insertAdjacentHTML("beforeend", `
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="sheet" id="item-sheet" role="dialog" aria-modal="true" hidden></div>
+<div class="sheet" id="basket-sheet" role="dialog" aria-modal="true" hidden></div>
+<button id="basket-bar" hidden></button>
+`);
+
+const backdrop = document.getElementById("backdrop");
+const itemSheet = document.getElementById("item-sheet");
+const basketSheet = document.getElementById("basket-sheet");
+const basketBar = document.getElementById("basket-bar");
+
+function closeSheets() {
+  backdrop.hidden = true;
+  itemSheet.hidden = true;
+  basketSheet.hidden = true;
+  current = null;
+}
+backdrop.addEventListener("click", closeSheets);
+
+function updateBar() {
+  const n = cartCount();
+  basketBar.hidden = n === 0;
+  document.body.classList.toggle("has-cart", n > 0);
+  if (n > 0) basketBar.textContent = `Basket (${n}) - ${fmt(cartTotal())}`;
+  saveCart();
+}
+
+function openItem(key) {
+  const { item, list } = findItem(key);
+  const u = unitInfo(item);
+  const inCart = cart.get(key);
+  current = { key, item, list, qty: inCart ? inCart.qty : 1 };
+  const media = item.logo
+    ? `<div class="sheet-logo ${list}"><img src="${LOGO}" alt="Raizy Delight's logo"></div>`
+    : `<img class="sheet-img" src="${item.img}" alt="${item.name}">`;
+  itemSheet.innerHTML = `
+    <button class="sheet-close" aria-label="Close">&times;</button>
+    ${media}
+    <div class="sheet-name">${item.name}</div>
+    ${item.note ? `<div class="sheet-note">(${item.note})</div>` : ""}
+    <div class="sheet-price">${item.price}</div>
+    ${u.pack ? `<div class="sheet-pack">quantity = ${u.pack}</div>` : ""}
+    <div class="stepper">
+      <button class="step" data-d="-1" aria-label="Less">&minus;</button>
+      <span class="qty" id="item-qty">${current.qty}</span>
+      <button class="step" data-d="1" aria-label="More">+</button>
+    </div>
+    <button class="primary" id="add-btn"></button>`;
+  const updBtn = () => {
+    document.getElementById("item-qty").textContent = current.qty;
+    document.getElementById("add-btn").textContent =
+      (inCart ? "Update basket" : "Add to basket") + " - " + fmt(u.amt * current.qty);
+  };
+  itemSheet.querySelectorAll(".step").forEach((b) =>
+    b.addEventListener("click", () => {
+      current.qty = Math.min(99, Math.max(1, current.qty + +b.dataset.d));
+      updBtn();
+    })
+  );
+  itemSheet.querySelector(".sheet-close").addEventListener("click", closeSheets);
+  document.getElementById("add-btn").addEventListener("click", () => {
+    cart.set(current.key, { item: current.item, list: current.list, qty: current.qty });
+    updateBar();
+    closeSheets();
+  });
+  updBtn();
+  backdrop.hidden = false;
+  itemSheet.hidden = false;
+}
+
+function basketLineHTML(key, { item, qty }) {
+  const u = unitInfo(item);
+  return `<div class="b-line" data-key="${key}">
+    <div class="b-info">
+      <div class="b-name">${item.name}</div>
+      <div class="b-price">${item.price}${item.note ? ` · ${item.note}` : ""}</div>
+    </div>
+    <div class="b-stepper">
+      <button class="step small" data-d="-1" aria-label="Less">&minus;</button>
+      <span class="qty">${qty}</span>
+      <button class="step small" data-d="1" aria-label="More">+</button>
+    </div>
+    <div class="b-total-line">${fmt(u.amt * qty)}</div>
+  </div>`;
+}
+
+function openBasket() {
+  if (cart.size === 0) return;
+  const renderBasket = () => {
+    const lines = [...cart.entries()].map(([k, v]) => basketLineHTML(k, v)).join("");
+    basketSheet.innerHTML = `
+      <button class="sheet-close" aria-label="Close">&times;</button>
+      <div class="sheet-title">Your order</div>
+      ${lines}
+      <div class="b-total"><span>Total</span><span>${fmt(cartTotal())}</span></div>
+      <input id="b-name" class="b-name-input" type="text" placeholder="Your name (optional)"
+             value="${(localStorage.getItem("rd-name") || "").replace(/"/g, "&quot;")}">
+      <textarea id="b-request" class="b-request" rows="2"
+        placeholder="Own request (optional)"></textarea>
+      <button class="primary" id="send-btn">Send order by email</button>`;
+    basketSheet.querySelector(".sheet-close").addEventListener("click", closeSheets);
+    basketSheet.querySelectorAll(".b-line").forEach((line) => {
+      const key = line.dataset.key;
+      line.querySelectorAll(".step").forEach((b) =>
+        b.addEventListener("click", () => {
+          const entry = cart.get(key);
+          entry.qty += +b.dataset.d;
+          if (entry.qty <= 0) cart.delete(key);
+          updateBar();
+          if (cart.size === 0) closeSheets(); else renderBasket();
+        })
+      );
+    });
+    document.getElementById("b-name").addEventListener("input", (e) =>
+      localStorage.setItem("rd-name", e.target.value)
+    );
+    document.getElementById("b-request").value = sessionStorage.getItem("rd-request") || "";
+    document.getElementById("b-request").addEventListener("input", (e) =>
+      sessionStorage.setItem("rd-request", e.target.value)
+    );
+    document.getElementById("send-btn").addEventListener("click", sendOrder);
+  };
+  renderBasket();
+  backdrop.hidden = false;
+  basketSheet.hidden = false;
+}
+
+function sendOrder() {
+  const name = (document.getElementById("b-name").value || "").trim();
+  const request = (document.getElementById("b-request").value || "").trim();
+  const lines = [...cart.values()].map(({ item, qty }) => {
+    const u = unitInfo(item);
+    return `${qty} x ${item.name} (${item.price}) - ${fmt(u.amt * qty)}`;
+  });
+  const body =
+    "New order - Raizy Delight's\n\n" +
+    lines.join("\n") +
+    "\n\nTotal: " + fmt(cartTotal()) +
+    (name ? "\n\nName: " + name : "") +
+    (request ? "\n\nOwn request: " + request : "");
+  toast("Your email app will open with the order ready - tap Send to place it.");
+  location.href =
+    "mailto:" + ORDER_EMAIL +
+    "?subject=" + encodeURIComponent("Cake order - Raizy Delight's") +
+    "&body=" + encodeURIComponent(body);
+}
+
+let toastTimer = null;
+function toast(msg) {
+  let el = document.getElementById("toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 6000);
+}
+
+// card taps
+document.querySelectorAll(".grid").forEach((g) => {
+  g.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (card) openItem(card.dataset.key);
+  });
+  g.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".card");
+    if (card) { e.preventDefault(); openItem(card.dataset.key); }
+  });
+});
+basketBar.addEventListener("click", openBasket);
+
+loadCart();
+updateBar();
+
+// test hooks for local verification (?seed=parve-15:2,dairy-3:1&sheet=item|basket&key=parve-0)
+const params = new URLSearchParams(location.search);
+if (params.get("seed")) {
+  params.get("seed").split(",").forEach((p) => {
+    const [k, q] = p.split(":");
+    const { item, list } = findItem(k);
+    if (item) cart.set(k, { item, list, qty: Math.max(1, +q || 1) });
+  });
+  updateBar();
+}
+if (params.get("sheet") === "item") openItem(params.get("key") || "parve-0");
+if (params.get("sheet") === "basket") openBasket();
