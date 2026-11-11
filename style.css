@@ -564,8 +564,10 @@ body.has-cart main { padding-bottom: 110px; }
   .card-body { flex-direction: column; gap: 4px; }
   .card-side {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    row-gap: 4px;
     width: 100%;
   }
 }
