@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raizy Delight's</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <img src="logo.png" alt="" class="splash-logo">
+    <div class="splash-words">
+      <span class="w1">Raizy</span>
+      <span class="w2">Delight's</span>
+      <span class="w3">Raizy Delight's</span>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <img src="logo.png" alt="Raizy Delight's logo" class="header-logo">
+  <h1>Raizy Delight's</h1>
+</header>
+
+<nav class="tabs" aria-label="Lists">
+  <button class="tab active" data-list="parve">Parve</button>
+  <button class="tab" data-list="dairy">Dairy</button>
+</nav>
+
+<main>
+  <section id="parve" class="list active" aria-label="Parve list">
+    <h2>Parve List</h2>
+    <div class="grid" id="grid-parve"></div>
+  </section>
+  <section id="dairy" class="list" aria-label="Dairy list">
+    <h2>Dairy List</h2>
+    <div class="grid" id="grid-dairy"></div>
+  </section>
+</main>
+
+<footer>
+  <img src="logo.png" alt="" class="footer-logo">
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
