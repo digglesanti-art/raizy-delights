@@ -584,3 +584,6 @@ body.has-cart main { padding-bottom: 110px; }
   .hero { padding: 26px 14px 8px; }
 }
 
+
+/* order not confirmed until the bakery replies */
+.b-notice { margin: 12px 0 10px; padding: 10px 12px; border-radius: 10px; background: #FFF4DC; border: 1px solid #E8C889; color: #5C3A10; font-size: .92rem; line-height: 1.35; }

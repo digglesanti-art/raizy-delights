@@ -129,6 +129,7 @@ if (sessionStorage.getItem("splash-seen")) {
 // Order destination email. Orders are sent as a prefilled email from the
 // customer's own mail app to this address.
 const ORDER_EMAIL = "raizy.freund97@gmail.com";
+const ORDER_NOTICE = "Please note: your order is not confirmed yet. We will first check if we can take it and then reply to you.";
 
 const cart = new Map(); // key -> { item, list, qty }
 let current = null;     // item being edited in the sheet
@@ -289,6 +290,7 @@ function openBasket() {
              value="${(localStorage.getItem("rd-name") || "").replace(/"/g, "&quot;")}">
       <textarea id="b-request" class="b-request" rows="2"
         placeholder="Own request (optional)"></textarea>
+      <p class="b-notice">${ORDER_NOTICE}</p>
       <button class="primary" id="send-btn">Send order by email</button>`;
     basketSheet.querySelector(".sheet-close").addEventListener("click", closeSheets);
     basketSheet.querySelectorAll(".b-line").forEach((line) => {
@@ -329,8 +331,9 @@ function sendOrder() {
     lines.join("\n") +
     "\n\nTotal: " + fmt(cartTotal()) +
     (name ? "\n\nName: " + name : "") +
-    (request ? "\n\nOwn request: " + request : "");
-  toast("Your email app will open with the order ready - tap Send to place it.");
+    (request ? "\n\nOwn request: " + request : "") +
+    "\n\n(" + ORDER_NOTICE + ")";
+  toast("Your email app will open with the order ready - tap Send. The order is only confirmed once we reply.");
   location.href =
     "mailto:" + ORDER_EMAIL +
     "?subject=" + encodeURIComponent("Cake order - Raizy Delight's") +
