@@ -236,14 +236,16 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 40px; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 26px 18px;
 }
 @media (min-width: 720px) {
-  .grid { grid-template-columns: repeat(3, 1fr); gap: 34px 24px; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px 24px; }
 }
 
-.card { cursor: pointer; }
+.card { cursor: pointer; min-width: 0; }
+.card-body { min-width: 0; }
+.card-name { min-width: 0; }
 .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .card-img {
   width: 100%;
@@ -272,7 +274,7 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 40px; }
   padding: 12px 2px 0;
 }
 .card-name {
-  font-size: 1.12rem;
+  font-size: clamp(0.92rem, 4.8vw, 1.12rem);
   font-weight: 600;
   color: var(--ink);
   line-height: 1.2;
@@ -544,4 +546,26 @@ body.has-cart main { padding-bottom: 110px; }
 @media (prefers-reduced-motion: reduce) {
   #splash { display: none; }
   html { scroll-behavior: auto; }
+}
+
+@media (max-width: 380px) {
+  .topbar-inner { padding: 8px 14px; }
+  .brand-word { font-size: 1.05rem; }
+  .brand-logo { width: 36px; }
+  #order-btn { padding: 8px 10px; font-size: 0.84rem; gap: 6px; }
+  #order-count { min-width: 20px; height: 20px; }
+  .tabs { padding: 20px 14px 12px; }
+  main { padding: 0 14px 40px; }
+  .hero { padding: 26px 14px 8px; }
+  .add-chip { font-size: 0.72rem; padding: 2px 8px; }
+}
+
+@media (max-width: 480px) {
+  .card-body { flex-direction: column; gap: 4px; }
+  .card-side {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
 }
