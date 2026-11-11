@@ -204,8 +204,18 @@ function updateBar() {
   basketBar.hidden = n === 0;
   document.body.classList.toggle("has-cart", n > 0);
   if (n > 0) basketBar.textContent = `Basket (${n}) - ${fmt(cartTotal())}`;
+  document.getElementById("order-count").textContent = n;
   saveCart();
 }
+
+document.getElementById("order-btn").addEventListener("click", () => {
+  if (cart.size === 0) {
+    toast("Your basket is empty - tap a cake to add it.");
+    document.getElementById("lists").scrollIntoView({ behavior: "smooth" });
+  } else {
+    openBasket();
+  }
+});
 
 function openItem(key) {
   const { item, list } = findItem(key);
@@ -357,16 +367,3 @@ basketBar.addEventListener("click", openBasket);
 
 loadCart();
 updateBar();
-
-// test hooks for local verification (?seed=parve-15:2,dairy-3:1&sheet=item|basket&key=parve-0)
-const params = new URLSearchParams(location.search);
-if (params.get("seed")) {
-  params.get("seed").split(",").forEach((p) => {
-    const [k, q] = p.split(":");
-    const { item, list } = findItem(k);
-    if (item) cart.set(k, { item, list, qty: Math.max(1, +q || 1) });
-  });
-  updateBar();
-}
-if (params.get("sheet") === "item") openItem(params.get("key") || "parve-0");
-if (params.get("sheet") === "basket") openBasket();
