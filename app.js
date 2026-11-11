@@ -1,4 +1,10 @@
 const LOGO = "logo-mark.png";
+/* soft studio backdrop tone per cake (the cake cut-out itself is the original photo's own pixels) */
+const TONE = {"parve-p1-0": "caramel","parve-p1-1": "apricot","parve-p1-2": "rose","parve-p1-3": "caramel","parve-p1-4": "butter","parve-p1-5": "sage","parve-p2-0": "latte","parve-p2-1": "caramel","parve-p2-2": "blush","parve-p2-3": "rose","parve-p2-4": "apricot","parve-p2-5": "apricot","parve-p2-6": "butter","parve-p3-0": "latte","parve-p3-1": "latte","parve-p3-2": "caramel","parve-p3-3": "caramel","parve-p3-4": "apricot","parve-p3-5": "blush","parve-p3-6": "butter","parve-p4-0": "latte","parve-p4-1": "blush","parve-p4-2": "sage","parve-p4-3": "rose","parve-p4-4": "butter","parve-p4-5": "blush","parve-p4-6": "apricot","parve-p5-0": "latte","parve-p5-1": "caramel","parve-p5-2": "butter","parve-p5-3": "blush","dairy-p1-0": "lavender","dairy-p1-1": "apricot","dairy-p1-2": "latte","dairy-p1-3": "butter","dairy-p1-4": "sage","dairy-p1-5": "caramel","dairy-p2-0": "apricot","dairy-p2-4": "latte","dairy-p2-1": "butter","dairy-p2-2": "caramel","dairy-p2-3": "blush","dairy-p3-0": "sage","dairy-p3-1": "apricot","dairy-p3-2": "butter","dairy-p3-3": "latte","dairy-p3-4": "blush","dairy-p3-5": "caramel"};
+const cutout = (img) => "images/cutout/" + img.replace(/\.jpg$/, ".webp");
+const toneOf = (item) => (item.img && TONE[item.img.replace(/\.jpg$/, "")]) || "butter";
+// display only: a bare amount like "90,00" is shown as "€ 90,00"; the stored price strings are unchanged
+const showPrice = (p) => (/^\d+(,\d+)?$/.test(p.trim()) ? "€ " + p.trim() : p);
 
 const PARVE = [
   { name: "Chocolate Log", price: "€ 60,00", note: "praline, halva, lotus, peanut", img: "parve-p1-0.jpg" },
@@ -70,22 +76,27 @@ const DAIRY = [
 /* ---------- catalog rendering ---------- */
 const LIST_OF = { parve: PARVE, dairy: DAIRY };
 
+function cakeStage(item, cls) {
+  // backdrop, floor and contact shadow are separate layers; the cake on top is the untouched cut-out
+  const cake = item.logo
+    ? `<img class="stage-logo" src="${LOGO}" alt="Raizy Delight's logo" loading="lazy">`
+    : `<img class="stage-cake" src="${cutout(item.img)}" alt="${item.name}" loading="lazy">`;
+  return `<div class="stage ${cls || ""}" data-tone="${toneOf(item)}"><span class="stage-floor"></span><span class="stage-shadow"></span>${cake}</div>`;
+}
+
 function cardHTML(item, list, idx) {
-  // Each cake photo sits whole on its own soft backdrop tile; the photo itself is not cropped or changed.
-  const media = item.logo
-    ? `<img class="card-logo-img" src="${LOGO}" alt="Raizy Delight's logo" loading="lazy">`
-    : `<img class="card-img" src="${item.img}" alt="${item.name}" loading="lazy">`;
-  const note = item.note ? `<p class="card-note">(${item.note})</p>` : "";
+  const u = unitInfo(item);
+  const desc = item.note ? item.note[0].toUpperCase() + item.note.slice(1) : (list === "parve" ? "Parve" : "Dairy") + (u.pack ? " · " + u.pack : "");
   const name = item.name.replace(/\//g, "/<wbr>");
   return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">
-    <div class="card-photo">${media}<span class="view-chip">Choose quantity</span></div>
+    <div class="card-photo">${cakeStage(item)}<span class="view-chip">Choose quantity</span></div>
     <div class="card-body">
       <div class="card-top">
         <h3 class="card-name">${name}</h3>
-        <div class="card-price">${item.price}</div>
+        <div class="card-price">${showPrice(item.price)}</div>
       </div>
-      ${note}
-      <div class="card-actions"><span class="btn btn-primary btn-sm add-btn">Add</span></div>
+      <p class="card-note">${desc}</p>
+      <div class="card-actions"><span class="add-btn">Add to order <span aria-hidden="true">+</span></span></div>
     </div>
   </article>`;
 }
@@ -255,15 +266,13 @@ function openItem(key) {
   const u = unitInfo(item);
   const inCart = cart.get(key);
   current = { key, item, list, qty: inCart ? inCart.qty : 1 };
-  const media = item.logo
-    ? `<div class="sheet-photo"><img class="sheet-logo" src="${LOGO}" alt="Raizy Delight's logo"></div>`
-    : `<div class="sheet-photo"><img class="sheet-img" src="${item.img}" alt="${item.name}"></div>`;
+  const media = `<div class="sheet-photo">${cakeStage(item, "stage-sheet")}</div>`;
   itemSheet.innerHTML = `
     <button class="sheet-close" aria-label="Close">&times;</button>
     ${media}
     <div class="sheet-name">${item.name}</div>
     ${item.note ? `<div class="sheet-note">(${item.note})</div>` : ""}
-    <div class="sheet-price">${item.price}</div>
+    <div class="sheet-price">${showPrice(item.price)}</div>
     ${u.pack ? `<div class="sheet-pack">quantity = ${u.pack}</div>` : ""}
     <div class="stepper">
       <button class="step" data-d="-1" aria-label="Less">&minus;</button>
@@ -298,7 +307,7 @@ function basketLineHTML(key, { item, qty }) {
   return `<div class="b-line" data-key="${key}">
     <div class="b-info">
       <div class="b-name">${item.name}</div>
-      <div class="b-price">${item.price}${item.note ? ` · ${item.note}` : ""}</div>
+      <div class="b-price">${showPrice(item.price)}${item.note ? ` · ${item.note}` : ""}</div>
     </div>
     <div class="b-stepper">
       <button class="step small" data-d="-1" aria-label="Less">&minus;</button>
@@ -355,7 +364,7 @@ function sendOrder() {
   const request = (document.getElementById("b-request").value || "").trim();
   const lines = [...cart.values()].map(({ item, qty }) => {
     const u = unitInfo(item);
-    return `${qty} x ${item.name} (${item.price}) - ${fmt(u.amt * qty)}`;
+    return `${qty} x ${item.name} (${showPrice(item.price)}) - ${fmt(u.amt * qty)}`;
   });
   const body =
     "New order - Raizy Delight's\n\n" +
@@ -382,6 +391,37 @@ function toast(msg) {
   el.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove("show"), 6000);
+}
+
+
+/* ---------- hero: three cut-out cakes over soft moving colour, generated from the data ---------- */
+const HERO = [["parve-10", "rose", ["#F08CA0", "#F7C1B5", "#FFD9C7"]], ["parve-2", "caramel", ["#E9A964", "#F6D2A2", "#D98E5B"]], ["dairy-19", "butter", ["#F5C46E", "#FBE3A8", "#EBA77A"]]];
+const heroStage = document.getElementById("hero-stage");
+if (heroStage) {
+  heroStage.innerHTML = HERO.map(([key, tone, blobs], i) => {
+    const { item } = findItem(key);
+    const src = cutout(item.img);
+    return `<div class="hs-slide hs-${i + 1}" data-tone="${tone}" data-key="${key}" style="--b1:${blobs[0]};--b2:${blobs[1]};--b3:${blobs[2]}">
+      <span class="hs-blob hs-blob1"></span><span class="hs-blob hs-blob2"></span><span class="hs-blob hs-blob3"></span>
+      <img class="hs-glow" src="${src}" alt="" aria-hidden="true">
+      <span class="hs-shadow"></span>
+      <img class="hs-cake" src="${src}" alt="${item.name}"${i ? ' loading="lazy"' : ' fetchpriority="high"'}>
+      <span class="hs-chip"><span class="hs-name">${item.name}</span><span class="hs-price">${showPrice(item.price)}</span></span>
+    </div>`;
+  }).join("") + `<div class="hs-dots" aria-hidden="true"><i></i><i></i><i></i></div>`;
+  const t0 = performance.now();
+  heroStage.addEventListener("click", () => {
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const i = reduce ? 0 : Math.floor(((performance.now() - t0) / 5000) % 3);
+    openItem(HERO[i][0]);
+  });
+}
+const favs = document.getElementById("favs");
+if (favs) {
+  favs.innerHTML = favs.dataset.keys.split(",").map((key) => {
+    const { item } = findItem(key);
+    return `<li><button type="button" class="fav" data-open="${key}"><span class="fav-img">${cakeStage(item, "stage-mini")}</span><span><span class="fav-name">${item.name}</span><span class="fav-price">${showPrice(item.price)}</span></span></button></li>`;
+  }).join("");
 }
 
 // hero favourites open the cake directly

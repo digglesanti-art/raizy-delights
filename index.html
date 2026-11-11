@@ -39,7 +39,7 @@
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
     </button>
     <a class="logo" href="#top" aria-label="Raizy Delight's home">
-      <img src="logo-wide.jpg" alt="Raizy Delight's" width="1806" height="429">
+      <img src="logo-wide-clear.png" alt="Raizy Delight's" width="903" height="214">
     </a>
     <div class="hdr-right">
       <button id="order-btn" class="btn btn-primary btn-sm" type="button">
@@ -66,18 +66,10 @@
       <a class="btn btn-primary" href="#lists">Start your order</a>
       <a class="btn btn-outline" href="#price-lists">Download price lists</a>
     </div>
-    <ul class="favs" aria-label="Favorites">
-      <li><button type="button" class="fav" data-open="parve-0"><span class="fav-img"><img src="parve-p1-0.jpg" alt=""></span><span><span class="fav-name">Chocolate Log</span><span class="fav-price">€ 60,00</span></span></button></li>
-      <li><button type="button" class="fav" data-open="parve-6"><span class="fav-img"><img src="parve-p1-5.jpg" alt=""></span><span><span class="fav-name">Fruit Tart</span><span class="fav-price">€ 45,00</span></span></button></li>
-      <li><button type="button" class="fav" data-open="dairy-19"><span class="fav-img"><img src="dairy-p3-5.jpg" alt=""></span><span><span class="fav-name">Cheesecake</span><span class="fav-price">90,00</span></span></button></li>
-    </ul>
+    <ul class="favs" id="favs" aria-label="Favorites" data-keys="parve-0,parve-6,dairy-19"></ul>
     <p class="hero-note">Parve and dairy lists. Orders go by email, straight from your basket.</p>
   </div>
-  <figure class="hero-photo" aria-label="A few of our cakes">
-    <img src="parve-p1-5.jpg" alt="Fruit Tart" class="hp hp1">
-    <img src="parve-p1-0.jpg" alt="Chocolate Log" class="hp hp2">
-    <img src="parve-p1-2.jpg" alt="Pomegranate Tart" class="hp hp3">
-  </figure>
+  <div class="hero-stage" id="hero-stage" role="button" tabindex="0" aria-label="Our cakes: tap to choose"></div>
 </section>
 
 <main id="main">

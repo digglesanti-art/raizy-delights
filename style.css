@@ -122,7 +122,7 @@ h3 { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
 .nav a { text-decoration: none; font-size: .95rem; font-weight: 500; padding: 4px 0; border-bottom: 1px solid transparent; }
 .nav a:hover { border-bottom-color: var(--gold); }
 .logo { display: block; justify-self: center; }
-.logo img { height: 40px; width: auto; mix-blend-mode: multiply; } /* lets the wordmark's own cream melt into the header */
+.logo img { height: 40px; width: auto; }
 .hdr-right { justify-self: end; display: flex; align-items: center; gap: 8px; }
 #order-btn #order-count {
   display: inline-flex; align-items: center; justify-content: center;
@@ -171,50 +171,105 @@ h3 { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
   font: inherit; color: inherit;
 }
 .fav-img {
-  flex: none; width: 64px; height: 64px; border-radius: var(--r);
-  background: var(--porcelain); display: flex; align-items: center; justify-content: center; padding: 6px;
+  flex: none; position: relative; width: 72px; height: 72px; border-radius: var(--r-lg); overflow: hidden;
 }
-.fav-img img { width: 100%; height: auto; border-radius: 2px; }
 .fav-name { display: block; font-size: .92rem; font-weight: 600; line-height: 1.3; }
 .fav-price { display: block; font-family: var(--f-display); font-size: 1.15rem; font-weight: 600; color: var(--brand); }
 .fav:hover .fav-name { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
 .hero-note { margin-top: 24px; font-size: .92rem; color: var(--cocoa); }
 
-/* hero photo tile: three of the cake photos, each whole, on a porcelain backdrop */
-.hero-photo {
-  margin: 0; position: relative; overflow: hidden; border-radius: var(--r-lg);
-  background: radial-gradient(120% 90% at 50% 40%, #F8EFE3 0%, #ECDDCA 100%);
-  width: 100%; justify-self: end; aspect-ratio: 4 / 5; max-height: min(78vh, 720px);
-  display: flex; flex-direction: column; justify-content: center; gap: 5%; padding: 8% 9%;
+/* hero stage: three cut-out cakes take turns over soft, slowly drifting colour.
+   Blur and colour live only on the backdrop layers; the sharp cake on top is the untouched cut-out. */
+.hero-stage {
+  position: relative; overflow: hidden; isolation: isolate; cursor: pointer;
+  width: 100%; justify-self: end; aspect-ratio: 4 / 5; max-height: min(80vh, 760px);
+  border-radius: calc(var(--r-lg) * 2);
+  background: radial-gradient(120% 90% at 50% 35%, var(--t1, #F8EFE3), var(--t2, #ECDDCA));
+  box-shadow: 0 30px 60px -40px rgba(51, 32, 15, .45);
 }
-.hp {
-  position: relative; width: 82%; height: auto; border-radius: 6px;
-  box-shadow: 0 18px 40px -18px rgba(51, 32, 15, .45), 0 2px 6px rgba(51, 32, 15, .08);
+.hs-slide {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(130% 95% at 50% 30%, var(--t1), var(--t2) 70%, var(--t3));
 }
-.hp1 { align-self: flex-start; }
-.hp2 { align-self: flex-end; }
-.hp3 { align-self: center; }
+.hs-slide:first-child { opacity: 1; }
+.hs-blob {
+  position: absolute; border-radius: 50%; filter: blur(50px); opacity: .85; will-change: transform;
+}
+.hs-blob1 { width: 70%; aspect-ratio: 1; left: -18%; top: -8%; background: var(--b1); }
+.hs-blob2 { width: 64%; aspect-ratio: 1; right: -20%; top: 18%; background: var(--b2); }
+.hs-blob3 { width: 72%; aspect-ratio: 1; left: 10%; bottom: -24%; background: var(--b3); opacity: .62; }
+.hs-glow {
+  position: absolute; left: 50%; top: 50%; width: 80%; height: auto;
+  transform: translate(-50%, -50%) scale(1.3);
+  filter: blur(64px) saturate(1.6); opacity: .6; pointer-events: none;
+}
+.hs-shadow {
+  position: absolute; left: 14%; right: 14%; bottom: 17%; height: 7%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(51, 32, 15, .38), rgba(51, 32, 15, 0) 72%);
+  filter: blur(4px);
+}
+.hs-cake {
+  position: absolute; left: 4%; right: 4%; top: 8%; bottom: 18%; width: 92%; height: 74%;
+  object-fit: contain; object-position: 50% 100%;
+}
+.hs-chip {
+  position: absolute; left: 50%; bottom: 6%; transform: translateX(-50%);
+  display: inline-flex; gap: .7em; align-items: baseline; white-space: nowrap;
+  background: rgba(255, 252, 247, .82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  padding: .6em 1.1em; border-radius: 999px; box-shadow: 0 8px 24px -14px rgba(51, 32, 15, .5);
+}
+.hs-name { font-family: var(--f-display); font-size: 1.25rem; font-weight: 600; }
+.hs-price { font-family: var(--f-display); font-size: 1.15rem; font-weight: 600; color: var(--brand); }
+.hs-dots { position: absolute; top: 18px; right: 20px; display: flex; gap: 6px; }
+.hs-dots i { width: 22px; height: 3px; border-radius: 2px; background: rgba(51, 32, 15, .18); overflow: hidden; position: relative; }
+.hs-dots i::after { content: ""; position: absolute; inset: 0; background: var(--choc); transform: scaleX(0); transform-origin: left; }
+.hs-dots i:first-child::after { transform: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hs-slide { animation: hs-fade 15s linear infinite both; }
+  .hs-slide:first-child { opacity: 0; }
+  .hs-2 { animation-delay: 5s; }
+  .hs-3 { animation-delay: 10s; }
+  .hs-blob1 { animation: hs-drift1 11s ease-in-out infinite alternate; }
+  .hs-blob2 { animation: hs-drift2 13s ease-in-out infinite alternate; }
+  .hs-blob3 { animation: hs-drift3 9s ease-in-out infinite alternate; }
+  .hs-glow { animation: hs-breathe 7s ease-in-out infinite alternate; }
+  .hs-cake, .hs-shadow { animation: hs-float 15s linear infinite both; }
+  .hs-shadow { animation-name: hs-shadow; }
+  .hs-2 .hs-cake, .hs-2 .hs-shadow { animation-delay: 5s; }
+  .hs-3 .hs-cake, .hs-3 .hs-shadow { animation-delay: 10s; }
+  .hs-dots i::after { animation: hs-bar 15s linear infinite both; }
+  .hs-dots i:first-child::after { transform: scaleX(0); }
+  .hs-dots i:nth-child(2)::after { animation-delay: 5s; }
+  .hs-dots i:nth-child(3)::after { animation-delay: 10s; }
+}
+@keyframes hs-fade { 0% { opacity: 0; } 5% { opacity: 1; } 33.3% { opacity: 1; } 39% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes hs-bar { 0% { transform: scaleX(0); } 33.3% { transform: scaleX(1); } 34% { transform: scaleX(0); } 100% { transform: scaleX(0); } }
+@keyframes hs-drift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(22%, 14%) scale(1.18); } }
+@keyframes hs-drift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(-26%, 18%) scale(.9); } }
+@keyframes hs-drift3 { from { transform: translate(0, 0) scale(.95); } to { transform: translate(16%, -20%) scale(1.15); } }
+@keyframes hs-breathe { from { transform: translate(-50%, -50%) scale(1.2) rotate(-6deg); } to { transform: translate(-50%, -54%) scale(1.45) rotate(6deg); } }
+@keyframes hs-float { 0% { transform: translateY(28px); } 8% { transform: translateY(2px); } 40% { transform: translateY(-10px); } 100% { transform: translateY(-10px); } }
+@keyframes hs-shadow { 0% { transform: scaleX(.78); opacity: .4; } 8% { transform: none; opacity: 1; } 40% { transform: scaleX(.94); opacity: .85; } 100% { transform: scaleX(.94); opacity: .85; } }
 
 @media (prefers-reduced-motion: no-preference) {
   .hero h1 { animation: rise .9s .1s cubic-bezier(.2, .7, .2, 1) both; }
   .hero .lead, .hero .actions, .favs, .hero-note { animation: rise .9s .25s cubic-bezier(.2, .7, .2, 1) both; }
-  .hp { animation: settle 1.4s cubic-bezier(.2, .7, .2, 1) both; }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes settle { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
 
+@media (min-width: 901px) { .hs-cake { left: 8%; right: 8%; width: 84%; } }
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 16px; }
-  .hero-photo { order: -1; aspect-ratio: auto; max-height: none; justify-self: stretch; padding: 7% 8%; gap: 16px; }
-  .hp { width: 80%; }
-  .hp3 { display: none; }
+  .hero-stage { order: -1; aspect-ratio: auto; height: min(60vh, 540px); min-height: 380px; max-height: none; justify-self: stretch; }
 }
 @media (max-width: 520px) {
   .hero h1 { font-size: clamp(2.9rem, 13vw, 3.6rem); }
   .hero .lead { font-size: 1.08rem; margin: 18px 0 24px; }
   .favs { gap: 10px; margin-top: 32px; }
   .fav { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .fav-img { width: 100%; height: auto; aspect-ratio: 1 / 1; padding: 8px; }
+  .fav-img { width: 100%; height: auto; aspect-ratio: 1 / 1; }
   .fav-name { font-size: .85rem; }
 }
 
@@ -246,27 +301,40 @@ h3 { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
 .card { display: flex; flex-direction: column; min-width: 0; cursor: pointer; }
 .card:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; border-radius: var(--r-lg); }
 
-/* the backdrop tile behind every cake photo; the photo itself is shown whole and untouched */
-.card-photo {
-  position: relative; display: flex; align-items: center; justify-content: center;
-  width: 100%; aspect-ratio: 5 / 4; border-radius: var(--r-lg); overflow: hidden;
-  padding: 8%;
-  background: var(--tile, var(--tile-1));
+/* soft studio backdrop per cake: tone gradient, a floor and a contact shadow; the cake cut-out sits on top untouched */
+.stage { --t1: #FBF4E4; --t2: #F1E4C8; --t3: #E6D3AE; position: absolute; inset: 0; overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 28%, var(--t1) 0%, var(--t2) 78%); }
+[data-tone="butter"]   { --t1: #FBF4E4; --t2: #F1E4C8; --t3: #E6D3AE; }
+[data-tone="caramel"]  { --t1: #F7EADB; --t2: #EBD3B9; --t3: #DDBE9C; }
+[data-tone="latte"]    { --t1: #F5EEE6; --t2: #E8DCCD; --t3: #D9C8B4; }
+[data-tone="apricot"]  { --t1: #FBEDE1; --t2: #F2D6BE; --t3: #E6C1A2; }
+[data-tone="blush"]    { --t1: #FAEEEA; --t2: #F0D9D2; --t3: #E3C3BA; }
+[data-tone="rose"]     { --t1: #F9E9E8; --t2: #EFD0CE; --t3: #E0B6B3; }
+[data-tone="sage"]     { --t1: #F1F3EA; --t2: #DFE5D1; --t3: #CBD4B8; }
+[data-tone="lavender"] { --t1: #F3F0F5; --t2: #E2DCE8; --t3: #CFC6DA; }
+.stage-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
+  background: linear-gradient(to bottom, rgba(255, 252, 247, .5), rgba(255, 252, 247, 0) 30%), linear-gradient(to bottom, var(--t2), var(--t3));
+  box-shadow: 0 -1px 0 rgba(255, 252, 247, .55);
 }
-.card-photo::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(90% 70% at 50% 45%, rgba(255, 252, 247, .55), rgba(255, 252, 247, 0) 70%);
+.stage-shadow {
+  position: absolute; left: 12%; right: 12%; bottom: 23%; height: 9%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(51, 32, 15, .34), rgba(51, 32, 15, 0) 70%);
 }
-.card:nth-child(4n+2) .card-photo { --tile: var(--tile-2); }
-.card:nth-child(4n+3) .card-photo { --tile: var(--tile-3); }
-.card:nth-child(4n+4) .card-photo { --tile: var(--tile-4); }
-.card-img {
-  position: relative; width: 100%; height: auto; border-radius: 6px;
-  box-shadow: 0 22px 40px -22px rgba(51, 32, 15, .55), 0 2px 6px rgba(51, 32, 15, .07);
+.stage-cake {
+  position: absolute; left: 7%; right: 7%; top: 12%; bottom: 25%; width: 86%; height: 63%;
+  object-fit: contain; object-position: 50% 100%;
   transition: transform .7s cubic-bezier(.2, .7, .2, 1);
 }
-.card:hover .card-img { transform: scale(1.03); }
-.card-logo-img { position: relative; width: 52%; height: auto; opacity: .92; }
+.stage-logo { position: absolute; left: 50%; top: 44%; width: 44%; height: auto; transform: translate(-50%, -50%); opacity: .9; }
+.stage-mini .stage-cake { left: 5%; right: 5%; width: 90%; top: 14%; height: 66%; bottom: 20%; }
+.stage-mini .stage-shadow { bottom: 18%; }
+.stage-mini .stage-floor { height: 26%; }
+
+.card-photo {
+  position: relative; width: 100%; aspect-ratio: 4 / 5; border-radius: var(--r-lg); overflow: hidden;
+}
+.card:hover .stage-cake { transform: translateY(-4px) scale(1.03); }
 .view-chip {
   position: absolute; left: 14px; bottom: 14px; z-index: 2;
   background: var(--choc); color: var(--on-dark);
@@ -276,14 +344,19 @@ h3 { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
 .card:hover .view-chip, .card:focus-visible .view-chip { opacity: 1; transform: none; }
 
 .card-body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 22px; }
-.card-name { font-family: var(--f-display); font-size: 1.75rem; font-weight: 600; line-height: 1.1; min-width: 0; overflow-wrap: anywhere; }
+.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 20px; }
+.card-name { font-family: var(--f-display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; min-width: 0; overflow-wrap: anywhere; }
 .card-price {
-  font-family: var(--f-display); font-size: 1.6rem; font-weight: 600; color: var(--brand);
+  font-family: var(--f-display); font-size: 1.45rem; font-weight: 600; color: var(--brand);
   white-space: nowrap; font-variant-numeric: lining-nums; text-align: right;
 }
-.card-note { color: var(--cocoa); font-size: .95rem; margin-top: 6px; }
-.card-actions { margin-top: auto; padding-top: 16px; }
+.card-note { color: var(--cocoa); font-size: .95rem; margin-top: 6px; line-height: 1.45; }
+.card-actions { margin-top: auto; padding-top: 14px; }
+.add-btn {
+  display: inline-flex; align-items: center; gap: .45em; font: 600 .9rem/1 var(--f-body); color: var(--brand);
+  padding-bottom: 3px; border-bottom: 1px solid rgba(127, 64, 23, .35);
+}
+.card:hover .add-btn { border-bottom-color: var(--brand); }
 
 /* dark "own request" card closing each list */
 .custom {
@@ -296,14 +369,13 @@ h3 { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
 .add-btn { pointer-events: none; }
 
 @media (max-width: 580px) {
-  .grid { gap: 36px 14px; }
-  .card-photo { aspect-ratio: 1 / 1; padding: 8%; }
+  .grid { gap: 40px 14px; }
   .card-top { flex-direction: column; gap: 2px; margin-top: 12px; }
   .card-name { font-size: 1.22rem; }
-  .card-price { font-size: 1.2rem; text-align: left; white-space: normal; }
+  .card-price { font-size: 1.15rem; text-align: left; white-space: normal; }
   .card-note { font-size: .8rem; margin-top: 2px; }
   .card-actions { padding-top: 10px; }
-  .card-actions .btn { width: 100%; padding: .75em 0; }
+  .add-btn { font-size: .82rem; }
   .view-chip { display: none; }
   .custom-wrap { grid-column: 1 / -1; }
   .custom { min-height: 0; }
@@ -368,11 +440,10 @@ body.has-cart .site-footer { padding-bottom: 110px; }
   background: rgba(255, 252, 247, .85); color: var(--choc); font-size: 1.3rem; line-height: 1; cursor: pointer; z-index: 2;
 }
 .sheet-photo {
-  display: flex; align-items: center; justify-content: center;
-  border-radius: var(--r-lg); padding: 8% 9%; background: var(--porcelain); margin-top: 26px;
+  position: relative; aspect-ratio: 5 / 4; overflow: hidden;
+  border-radius: var(--r-lg); margin-top: 26px;
 }
-.sheet-img { width: 100%; height: auto; border-radius: 6px; box-shadow: 0 22px 40px -22px rgba(51, 32, 15, .55); }
-.sheet-logo { width: 34%; height: auto; }
+.stage-sheet .stage-cake { top: 9%; height: 68%; bottom: 23%; }
 .sheet-name { font-family: var(--f-display); font-size: 2rem; font-weight: 600; line-height: 1.1; margin-top: 18px; }
 .sheet-note { font-size: .9rem; color: var(--cocoa); margin-top: 4px; }
 .sheet-price { font-family: var(--f-display); font-size: 1.6rem; font-weight: 600; color: var(--brand); margin-top: 6px; }
