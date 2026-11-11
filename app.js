@@ -71,25 +71,33 @@ const DAIRY = [
 const LIST_OF = { parve: PARVE, dairy: DAIRY };
 
 function cardHTML(item, list, idx) {
+  // Each cake photo sits whole on its own soft backdrop tile; the photo itself is not cropped or changed.
   const media = item.logo
-    ? `<div class="card-logo ${list}"><img src="${LOGO}" alt="Raizy Delight's logo"></div>`
+    ? `<img class="card-logo-img" src="${LOGO}" alt="Raizy Delight's logo" loading="lazy">`
     : `<img class="card-img" src="${item.img}" alt="${item.name}" loading="lazy">`;
-  const note = item.note ? `<span class="card-note">(${item.note})</span>` : "";
+  const note = item.note ? `<p class="card-note">(${item.note})</p>` : "";
   const name = item.name.replace(/\//g, "/<wbr>");
-  return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">${media}
+  return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">
+    <div class="card-photo">${media}<span class="view-chip">Choose quantity</span></div>
     <div class="card-body">
       <div class="card-top">
-        <div class="card-name">${name}${note}</div>
+        <h3 class="card-name">${name}</h3>
         <div class="card-price">${item.price}</div>
       </div>
-      <div class="add-btn">Add</div>
+      ${note}
+      <div class="card-actions"><span class="btn btn-primary btn-sm add-btn">Add</span></div>
     </div>
   </article>`;
 }
 
 function render(list, items) {
   document.getElementById("grid-" + list).innerHTML =
-    items.map((i, idx) => cardHTML(i, list, idx)).join("");
+    items.map((i, idx) => cardHTML(i, list, idx)).join("") +
+    `<div class="custom-wrap"><div class="custom">
+      <h3>Something of your own?</h3>
+      <p>Add your own request in the basket before you send the order, and it goes along with it.</p>
+      <button class="btn btn-light btn-sm" type="button" data-open-basket>Open your order</button>
+    </div></div>`;
 }
 
 render("parve", PARVE);
@@ -104,13 +112,38 @@ function activate(listName) {
   );
 }
 
+function showList(listName, scroll) {
+  activate(listName);
+  history.replaceState(null, "", "#" + listName);
+  if (scroll) document.getElementById("lists").scrollIntoView({ behavior: "smooth" });
+}
+
 document.querySelectorAll(".tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    activate(tab.dataset.list);
-    history.replaceState(null, "", "#" + tab.dataset.list);
-    window.scrollTo({ top: 0 });
+  tab.addEventListener("click", () => showList(tab.dataset.list, true));
+});
+
+// header / footer links that jump to a list
+document.querySelectorAll("[data-go]").forEach((a) => {
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeMenu();
+    showList(a.dataset.go, true);
   });
 });
+
+// mobile menu
+const menuBtn = document.getElementById("menu-btn");
+const mobileNav = document.getElementById("mobile-nav");
+function closeMenu() {
+  mobileNav.hidden = true;
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+menuBtn.addEventListener("click", () => {
+  const open = mobileNav.hidden;
+  mobileNav.hidden = !open;
+  menuBtn.setAttribute("aria-expanded", String(open));
+});
+mobileNav.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
 
 if (location.hash === "#dairy") activate("dairy");
 
@@ -203,7 +236,7 @@ function updateBar() {
   const n = cartCount();
   basketBar.hidden = n === 0;
   document.body.classList.toggle("has-cart", n > 0);
-  if (n > 0) basketBar.textContent = `Basket (${n}) - ${fmt(cartTotal())}`;
+  if (n > 0) basketBar.textContent = `Your order (${n}) · ${fmt(cartTotal())}`;
   document.getElementById("order-count").textContent = n;
   saveCart();
 }
@@ -223,8 +256,8 @@ function openItem(key) {
   const inCart = cart.get(key);
   current = { key, item, list, qty: inCart ? inCart.qty : 1 };
   const media = item.logo
-    ? `<div class="sheet-logo ${list}"><img src="${LOGO}" alt="Raizy Delight's logo"></div>`
-    : `<img class="sheet-img" src="${item.img}" alt="${item.name}">`;
+    ? `<div class="sheet-photo"><img class="sheet-logo" src="${LOGO}" alt="Raizy Delight's logo"></div>`
+    : `<div class="sheet-photo"><img class="sheet-img" src="${item.img}" alt="${item.name}"></div>`;
   itemSheet.innerHTML = `
     <button class="sheet-close" aria-label="Close">&times;</button>
     ${media}
@@ -350,6 +383,18 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove("show"), 6000);
 }
+
+// hero favourites open the cake directly
+document.querySelectorAll("[data-open]").forEach((b) =>
+  b.addEventListener("click", () => openItem(b.dataset.open))
+);
+
+document.querySelectorAll("[data-open-basket]").forEach((b) =>
+  b.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.getElementById("order-btn").click();
+  })
+);
 
 // card taps
 document.querySelectorAll(".grid").forEach((g) => {

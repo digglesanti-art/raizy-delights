@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Raizy Delight's</title>
+<meta name="description" content="Raizy Delight's: parve and dairy cakes and pastries. Choose your cakes and send your order by email.">
+<meta name="theme-color" content="#FDFAF5">
 <link rel="icon" type="image/png" href="logo-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,55 +25,132 @@
   </div>
 </div>
 
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#top" aria-label="Raizy Delight's home">
-      <img src="logo-mark.png" alt="" class="brand-logo">
-      <span class="brand-word">Raizy Delight's</span>
+<a class="skip" href="#lists">Skip to the cakes</a>
+
+<header class="site-header" id="top">
+  <div class="wrap hdr">
+    <nav class="nav" aria-label="Main">
+      <a href="#parve" data-go="parve">Parve</a>
+      <a href="#dairy" data-go="dairy">Dairy</a>
+      <a href="#price-lists">Price lists</a>
+      <a href="#how">How to order</a>
+    </nav>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+    </button>
+    <a class="logo" href="#top" aria-label="Raizy Delight's home">
+      <img src="logo-wide.jpg" alt="Raizy Delight's" width="1806" height="429">
     </a>
-    <button id="order-btn" type="button">Your order <span id="order-count">0</span></button>
+    <div class="hdr-right">
+      <button id="order-btn" class="btn btn-primary btn-sm" type="button">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8Zm4 0V6.5a3 3 0 0 1 6 0V8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg>
+        <span class="label">Your order</span> <span id="order-count">0</span>
+      </button>
+    </div>
   </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" hidden>
+    <div class="wrap">
+      <a href="#parve" data-go="parve">Parve</a>
+      <a href="#dairy" data-go="dairy">Dairy</a>
+      <a href="#price-lists">Price lists</a>
+      <a href="#how">How to order</a>
+    </div>
+  </nav>
 </header>
 
-<section class="hero" id="top">
-  <div class="hero-inner">
-    <div class="hero-text">
-      <img src="logo-wide.jpg" alt="Raizy Delight's" class="hero-wordmark">
-      <p>Parve &amp; dairy cakes and pastries.</p>
-      <div class="hero-actions">
-        <a class="btn-solid" href="#lists">Start your order</a>
-      </div>
+<section class="wrap hero" aria-labelledby="hero-title">
+  <div class="hero-text">
+    <h1 id="hero-title">Parve &amp; dairy cakes and pastries.</h1>
+    <p class="lead">Tarts, logs, mousses, cookies and cheesecakes. Choose your cakes here and send your order by email.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#lists">Start your order</a>
+      <a class="btn btn-outline" href="#price-lists">Download price lists</a>
     </div>
-    <div class="hero-art">
-      <img src="parve-p1-5.jpg" alt="Fruit Tart" class="hero-photo">
-    </div>
+    <ul class="favs" aria-label="Favorites">
+      <li><button type="button" class="fav" data-open="parve-0"><span class="fav-img"><img src="parve-p1-0.jpg" alt=""></span><span><span class="fav-name">Chocolate Log</span><span class="fav-price">€ 60,00</span></span></button></li>
+      <li><button type="button" class="fav" data-open="parve-6"><span class="fav-img"><img src="parve-p1-5.jpg" alt=""></span><span><span class="fav-name">Fruit Tart</span><span class="fav-price">€ 45,00</span></span></button></li>
+      <li><button type="button" class="fav" data-open="dairy-19"><span class="fav-img"><img src="dairy-p3-5.jpg" alt=""></span><span><span class="fav-name">Cheesecake</span><span class="fav-price">90,00</span></span></button></li>
+    </ul>
+    <p class="hero-note">Parve and dairy lists. Orders go by email, straight from your basket.</p>
   </div>
+  <figure class="hero-photo" aria-label="A few of our cakes">
+    <img src="parve-p1-5.jpg" alt="Fruit Tart" class="hp hp1">
+    <img src="parve-p1-0.jpg" alt="Chocolate Log" class="hp hp2">
+    <img src="parve-p1-2.jpg" alt="Pomegranate Tart" class="hp hp3">
+  </figure>
 </section>
 
-<nav class="tabs" id="lists" aria-label="Lists">
-  <button class="tab active" data-list="parve">Parve</button>
-  <button class="tab" data-list="dairy">Dairy</button>
-</nav>
-
-<div class="downloads">
-  <a class="btn-outline" href="parve-list.pdf" download>Download parve list (PDF)</a>
-  <a class="btn-outline" href="dairy-list.pdf" download>Download dairy list (PDF)</a>
-</div>
-
-<main>
-  <section id="parve" class="list active" aria-label="Parve list">
-    <h2>Parve List</h2>
-    <div class="grid" id="grid-parve"></div>
+<main id="main">
+  <section class="section products" id="lists" aria-labelledby="products-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="products-title">Our cakes</h2>
+        <p>Tap any cake to choose how many. Your basket is saved as you go, and the order is sent by email.</p>
+      </div>
+      <nav class="tabs" aria-label="Lists">
+        <button class="tab active" data-list="parve" type="button">Parve</button>
+        <button class="tab" data-list="dairy" type="button">Dairy</button>
+      </nav>
+      <section id="parve" class="list active" aria-label="Parve list">
+        <h2 class="list-title">Parve List</h2>
+        <div class="grid" id="grid-parve"></div>
+      </section>
+      <section id="dairy" class="list" aria-label="Dairy list">
+        <h2 class="list-title">Dairy List</h2>
+        <div class="grid" id="grid-dairy"></div>
+      </section>
+    </div>
   </section>
-  <section id="dairy" class="list" aria-label="Dairy list">
-    <h2>Dairy List</h2>
-    <div class="grid" id="grid-dairy"></div>
+
+  <section class="section alt" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="how-title">How ordering works</h2></div>
+      <ol class="steps">
+        <li class="step-item"><div class="step-n">1</div><h3>Choose your cakes</h3><p>Tap a cake, pick how many and add it to your basket. Switch between the parve and dairy lists any time.</p></li>
+        <li class="step-item"><div class="step-n">2</div><h3>Check your basket</h3><p>Open "Your order" to change quantities, add your name and any request of your own.</p></li>
+        <li class="step-item"><div class="step-n">3</div><h3>Send it by email</h3><p>Your email app opens with the whole order filled in. Tap Send and it reaches us.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band section" id="price-lists" aria-labelledby="pl-title">
+    <div class="wrap band-grid">
+      <figure class="band-photo"><img src="parve-p2-0.jpg" alt="S'mores Tart"></figure>
+      <div>
+        <h2 id="pl-title">Price lists</h2>
+        <p>Prefer the full lists on paper? Download the parve and dairy price lists as PDFs to keep or share.</p>
+        <div class="actions">
+          <a class="btn btn-light" href="parve-list.pdf" download>Parve list (PDF)</a>
+          <a class="btn btn-ghost-light" href="dairy-list.pdf" download>Dairy list (PDF)</a>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
-<footer>
-  <img src="logo-mark.png" alt="" class="footer-logo">
-  <div class="footer-word">Raizy Delight's</div>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <img src="logo-mark.png" alt="" class="footer-logo">
+        <div class="footer-word">Raizy Delight's</div>
+        <p class="tag">Parve &amp; dairy cakes and pastries.</p>
+      </div>
+      <div class="col">
+        <h2>Cakes</h2>
+        <ul><li><a href="#parve" data-go="parve">Parve list</a></li><li><a href="#dairy" data-go="dairy">Dairy list</a></li></ul>
+      </div>
+      <div class="col">
+        <h2>Price lists</h2>
+        <ul><li><a href="parve-list.pdf" download>Parve (PDF)</a></li><li><a href="dairy-list.pdf" download>Dairy (PDF)</a></li></ul>
+      </div>
+      <div class="col">
+        <h2>Ordering</h2>
+        <ul><li><a href="#how">How to order</a></li><li><a href="#lists">Start your order</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-bottom"><span>&copy; Raizy Delight's</span><a href="#top">Back to top</a></div>
+  </div>
 </footer>
 
 <script src="app.js"></script>
