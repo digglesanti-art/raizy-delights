@@ -1,4 +1,4 @@
-const LOGO = "logo.png";
+const LOGO = "logo-mark.png";
 
 const PARVE = [
   { name: "Chocolate Log", price: "€ 60,00", note: "praline, halva, lotus, peanut", img: "parve-p1-0.jpg" },
@@ -78,11 +78,11 @@ function cardHTML(item, list, idx) {
   const name = item.name.replace(/\//g, "/<wbr>");
   return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">${media}
     <div class="card-body">
-      <div class="card-name">${name}${note}</div>
-      <div class="card-side">
+      <div class="card-top">
+        <div class="card-name">${name}${note}</div>
         <div class="card-price">${item.price}</div>
-        <div class="add-chip">+ Add</div>
       </div>
+      <div class="add-btn">Add</div>
     </div>
   </article>`;
 }
