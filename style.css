@@ -2053,4 +2053,39 @@ select:focus-visible {
 }
 
 
+/* ============================================================
+   v4.3 PATCH: placeholder cards (.stage/.stage-logo) fit inside
+   the 16/10 photo box; view-chip pinned inside photo, not flow
+   ============================================================ */
+
+.card-photo { position: relative; }
+
+.card-photo .stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-photo .stage .stage-floor,
+.card-photo .stage .stage-shadow { display: none !important; }
+
+.card-photo .stage img.stage-logo {
+  position: static;
+  width: auto;
+  height: auto;
+  max-width: 86%;
+  max-height: 86%;
+  object-fit: contain;
+}
+
+.card-photo .view-chip {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3;
+}
+
+
 /* END OF CSS */
