@@ -1,8 +1,8 @@
-const CACHE = 'raizy-v1';
+const CACHE = 'raizy-v2';
 const CORE = [
   './', 'index.html', 'style.css', 'app.js',
   'logo-mark.png', 'logo-wide-clear.png', 'floral-edge.png',
-  'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'apple-touch-icon.png',
+  'icon-192.png', 'icon-512.png', 'icon-512-maskable.png',
   'manifest.webmanifest'
 ];
 self.addEventListener('install', (e) => {
