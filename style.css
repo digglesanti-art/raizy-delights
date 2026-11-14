@@ -2289,3 +2289,47 @@ body.has-cart { padding-bottom: 78px; }
 
 
 /* END OF CSS */
+
+/* ============================================================
+   v4.6 PATCH: mobile fixed overlays must size to the VISUAL
+   viewport (vw/dvh units), not the layout ICB. On phones whose
+   layout viewport expands beyond device width, % widths and
+   left:50% centering push the sheet offscreen (seen on David's
+   Android). 100vw/100dvh match the visual viewport in both
+   models, and top:100dvh+translateY(-100%) bottom-anchors within
+   the visible area.
+   ============================================================ */
+
+@media (max-width: 600px) {
+  .backdrop {
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+  }
+
+  .sheet {
+    left: 0;
+    right: auto;
+    margin: 0;
+    width: 100vw;
+    max-width: none;
+    top: 100dvh;
+    bottom: auto;
+    transform: translateY(-100%);
+    max-height: 100dvh;
+    border-radius: 22px 22px 0 0;
+  }
+
+  #basket-bar {
+    left: 0;
+    right: auto;
+    margin: 0;
+    width: 100vw;
+    max-width: none;
+    top: 100dvh;
+    bottom: auto;
+    transform: translateY(-100%);
+  }
+}
