@@ -1,3 +1,4 @@
+
 /* ============================================================
    RAIZY DELIGHT'S
    COMPLETE REPLACEMENT STYLE.CSS
@@ -2106,11 +2107,13 @@ select:focus-visible {
 
 .sheet {
   position: fixed;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
   z-index: 70;
-  transform: translateX(-50%);
-  width: min(560px, 100%);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 560px;
   max-height: 88vh;
   overflow-y: auto;
   background: var(--cream-light);
