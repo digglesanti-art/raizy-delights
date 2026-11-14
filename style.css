@@ -1,4 +1,3 @@
-
 /* ============================================================
    RAIZY DELIGHT'S
    COMPLETE REPLACEMENT STYLE.CSS
@@ -2016,5 +2015,17 @@ select:focus-visible {
 }
 
 
-/* END OF CSS */
+/* ============================================================
+   v4.1 PATCH: hide favs strip, hero-note, slider dots/captions
+   (not present in the target design)
+   ============================================================ */
 
+.hero .favs,
+.hero .hero-note { display: none !important; }
+
+.hero-stage .hs-dots,
+.hero-stage .hs-cap,
+.hero-stage .hs-caption { display: none !important; }
+
+
+/* END OF CSS */
