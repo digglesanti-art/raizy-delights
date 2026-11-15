@@ -823,3 +823,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .card-photo .view-chip { display: none !important; }
 .hero-stage .hs-chip { display: none !important; }
+
+/* ============================================================
+   v5.2 PATCH (fix real-phone scroll/typography regressions):
+   1) .hero::before full-bleed used inset 0 -100vw, which tripled
+      the layout viewport (innerWidth 765 vs visual 390) and made
+      the fixed bottom bar chase the visual viewport during scroll.
+      Contained center-bleed keeps the same look with no expansion.
+   2) Price stacked under the product name (approved design),
+      instead of squeezed into the name row.
+   ============================================================ */
+html { overflow-x: clip; }
+
+.hero::before {
+  inset: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+}
+
+.card-top {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
