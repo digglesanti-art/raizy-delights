@@ -850,3 +850,6 @@ html { overflow-x: clip; }
 
 /* v5.3 PATCH: keep the euro sign upright (body font) inside serif prices */
 .eur { font-family: var(--body-font); font-style: normal; }
+
+/* v5.4 PATCH: splash showed the name twice - hide the duplicate combined span */
+.splash-words .w3 { display: none; }
