@@ -847,3 +847,6 @@ html { overflow-x: clip; }
   align-items: flex-start;
   gap: 2px;
 }
+
+/* v5.3 PATCH: keep the euro sign upright (body font) inside serif prices */
+.eur { font-family: var(--body-font); font-style: normal; }
