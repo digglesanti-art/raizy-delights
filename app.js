@@ -459,3 +459,52 @@ basketBar.addEventListener("click", openBasket);
 
 loadCart();
 updateBar();
+
+/* ============================================================
+   v4.7: visualViewport-driven overlay placement on mobile.
+   Fixed elements resolve against the layout viewport, which on
+   phones can be wider/offset from the visible region. This pins
+   sheet/backdrop/basket-bar to the ACTUAL visual viewport and
+   tracks it on scroll/resize.
+   ============================================================ */
+(function () {
+  function place() {
+    var vv = window.visualViewport;
+    var w = vv ? vv.width : document.documentElement.clientWidth;
+    var h = vv ? vv.height : document.documentElement.clientHeight;
+    var offL = vv ? vv.offsetLeft : 0;
+    var offT = vv ? vv.offsetTop : 0;
+    var mobile = w <= 600;
+    document.querySelectorAll('.sheet, .backdrop, #basket-bar').forEach(function (el) {
+      if (!mobile || el.hidden) { el.style.cssText = ''; return; }
+      if (el.classList.contains('backdrop')) {
+        el.style.inset = 'auto';
+        el.style.top = offT + 'px';
+        el.style.left = offL + 'px';
+        el.style.width = w + 'px';
+        el.style.height = h + 'px';
+      } else {
+        el.style.left = offL + 'px';
+        el.style.right = 'auto';
+        el.style.margin = '0';
+        el.style.width = w + 'px';
+        el.style.maxWidth = 'none';
+        el.style.top = (offT + h) + 'px';
+        el.style.bottom = 'auto';
+        el.style.transform = 'translateY(-100%)';
+        el.style.maxHeight = h + 'px';
+      }
+    });
+  }
+  var mo = new MutationObserver(place);
+  document.querySelectorAll('.sheet, .backdrop, #basket-bar').forEach(function (el) {
+    mo.observe(el, { attributes: true, attributeFilter: ['hidden'] });
+  });
+  if (window.visualViewport) {
+    visualViewport.addEventListener('resize', place);
+    visualViewport.addEventListener('scroll', place);
+  }
+  window.addEventListener('scroll', place, { passive: true });
+  window.addEventListener('resize', place);
+  place();
+})();
