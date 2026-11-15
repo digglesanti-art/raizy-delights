@@ -822,3 +822,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .hero-stage .hs-caption { display: none !important; }
 
 .card-photo .view-chip { display: none !important; }
+.hero-stage .hs-chip { display: none !important; }
