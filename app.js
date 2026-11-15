@@ -47,6 +47,7 @@ const PHOTO = {
 
 const toneOf = item => (item.img && TONE[item.img.replace(/\.jpg$/, "")]) || "butter";
 const showPrice = p => (/^\d+(,\d+)?$/.test(p.trim()) ? "€ " + p.trim() : p);
+const showPriceH = p => showPrice(p).replaceAll("€", '<span class="eur">€</span>');
 
 const PARVE = [
   {name:"Chocolate Log",price:"€ 60,00",note:"praline, halva, lotus, peanut",img:"parve-p1-0.jpg"},
@@ -155,7 +156,7 @@ function cardHTML(item,list,idx) {
   return `<article class="card" data-key="${list}-${idx}" role="button" tabindex="0" aria-label="Order ${item.name}">
     <div class="card-photo">${cakeStage(item)}<span class="view-chip">Choose quantity</span></div>
     <div class="card-body">
-      <div class="card-top"><h3 class="card-name">${name}</h3><div class="card-price">${showPrice(item.price)}</div></div>
+      <div class="card-top"><h3 class="card-name">${name}</h3><div class="card-price">${showPriceH(item.price)}</div></div>
       <p class="card-note">${desc}</p>
       <div class="card-actions"><span class="add-btn">Add to order <span aria-hidden="true">+</span></span></div>
     </div>
@@ -386,7 +387,7 @@ function openItem(key) {
       <div class="sheet-photo">${cakeStage(item,"stage-sheet")}</div>
       <div class="sheet-name">${item.name}</div>
       ${item.note?`<div class="sheet-note">${item.note}</div>`:""}
-      <div class="sheet-price">${showPrice(item.price)}</div>
+      <div class="sheet-price">${showPriceH(item.price)}</div>
       ${unit.pack?`<div class="sheet-pack">${unit.pack}</div>`:""}
       <div class="stepper">
         <button class="step" type="button" data-d="-1" aria-label="Decrease quantity">−</button>
@@ -425,7 +426,7 @@ function basketLineHTML(key,entry) {
   return `<div class="b-line" data-key="${key}">
     <div class="b-info">
       <div class="b-name">${item.name}</div>
-      <div class="b-price">${showPrice(item.price)}${item.note?` · ${item.note}`:""}</div>
+      <div class="b-price">${showPriceH(item.price)}${item.note?` · ${item.note}`:""}</div>
     </div>
     <div class="b-stepper">
       <button class="step small" type="button" data-d="-1" aria-label="Decrease ${item.name}">−</button>
@@ -557,7 +558,7 @@ if(heroStage) {
       <img class="hs-glow" src="${src}" alt="" aria-hidden="true">
       <span class="hs-shadow"></span>
       <img class="hs-cake" src="${src}" alt="${item.name}"${index?" loading=\"lazy\"":" fetchpriority=\"high\""}>
-      <span class="hs-chip"><span class="hs-name">${item.name}</span><span class="hs-price">${showPrice(item.price)}</span></span>
+      <span class="hs-chip"><span class="hs-name">${item.name}</span><span class="hs-price">${showPriceH(item.price)}</span></span>
     </div>`;
   }).join("")+`<div class="hs-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>`;
 
@@ -583,7 +584,7 @@ if(favs && favs.dataset.keys) {
     if(!item) return "";
     return `<li><button type="button" class="fav" data-open="${key}">
       <span class="fav-img">${cakeStage(item,"stage-mini")}</span>
-      <span><span class="fav-name">${item.name}</span><span class="fav-price">${showPrice(item.price)}</span></span>
+      <span><span class="fav-name">${item.name}</span><span class="fav-price">${showPriceH(item.price)}</span></span>
     </button></li>`;
   }).join("");
 }
