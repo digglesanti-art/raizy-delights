@@ -807,3 +807,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* ============================================================
+   v5.1 PATCH (carry-over from approved design): hide favorites
+   strip, hero-note, slider dots/captions (not in chosen design),
+   and the redundant "Choose quantity" chip over card photos -
+   the whole card opens the quantity sheet; "Add to order +" stays
+   ============================================================ */
+.hero .favs,
+.hero .hero-note { display: none !important; }
+
+.hero-stage .hs-dots,
+.hero-stage .hs-cap,
+.hero-stage .hs-caption { display: none !important; }
+
+.card-photo .view-chip { display: none !important; }
