@@ -857,3 +857,18 @@ html { overflow-x: clip; }
 /* v5.5 PATCH: one consistent font per price string - card price fully in the sans body font (approved look), sheet price fully in the serif heading font */
 .card-price { font-family: var(--body-font); }
 .sheet-price .eur { font-family: var(--heading-font); }
+
+/* v5.6 PATCH: pinch zoom shrinks the visual viewport and the sheet reflows to the tiny width,
+   collapsing the scroll area behind the header/footer. When the overlay is flagged zoomed,
+   compact the chrome and hide the photo so name, price, stepper and button all stay usable. */
+.rd-overlay-root.zoomed .sheet-head { min-height: 0; padding: 8px 52px; }
+.rd-overlay-root.zoomed .sheet-title { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rd-overlay-root.zoomed .sheet-close { width: 36px; height: 36px; font-size: 22px; top: 6px; right: 8px; }
+.rd-overlay-root.zoomed .sheet-photo { display: none; }
+.rd-overlay-root.zoomed .sheet-scroll { padding: 10px 16px 14px; }
+.rd-overlay-root.zoomed .sheet-name { font-size: 20px; }
+.rd-overlay-root.zoomed .sheet-price { font-size: 18px; }
+.rd-overlay-root.zoomed .stepper { margin: 10px 0 4px; gap: 16px; }
+.rd-overlay-root.zoomed .step { width: 44px; height: 44px; }
+.rd-overlay-root.zoomed .sheet-footer { padding: 8px 14px calc(8px + env(safe-area-inset-bottom)); }
+.rd-overlay-root.zoomed .primary { min-height: 46px; font-size: 15px; padding: 10px 14px; }
