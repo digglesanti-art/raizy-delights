@@ -341,7 +341,7 @@ body::after { transform: scaleX(-1); }
 .card-photo {
   position: relative;
   width: 100%;
-  aspect-ratio: 7 / 3;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 11px;
   background: #F2E2D4;
@@ -558,7 +558,7 @@ body::after { transform: scaleX(-1); }
 }
 .sheet-photo {
   width: 100%;
-  aspect-ratio: 7 / 3;
+  aspect-ratio: 16 / 10;
   max-height: 260px;
   margin: 0 auto 16px;
   overflow: hidden;
@@ -746,7 +746,7 @@ body.has-cart .section.products { padding-bottom: 90px; }
   .tab { min-width: 0; flex: 1; max-width: 170px; min-height: 46px; font-size: 16px; }
   .grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
   .card { padding: 6px; border-radius: 14px; }
-  .card-photo { aspect-ratio: 7 / 3; }
+  .card-photo { aspect-ratio: 1 / 1; }
   .card-name { font-size: clamp(14px,3.8vw,17px); }
   .card-price { font-size: clamp(14px,3.8vw,17px); }
   .card-note { font-size: 11px; }
@@ -857,6 +857,3 @@ html { overflow-x: clip; }
 /* v5.5 PATCH: one consistent font per price string - card price fully in the sans body font (approved look), sheet price fully in the serif heading font */
 .card-price { font-family: var(--body-font); }
 .sheet-price .eur { font-family: var(--heading-font); }
-
-/* v5.6 PATCH: photo boxes now match the real product-photo aspect (924x396 = 7:3)
-   so the full picture fills the full box - no blank bands, no cropping. */
