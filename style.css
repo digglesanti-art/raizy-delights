@@ -853,3 +853,7 @@ html { overflow-x: clip; }
 
 /* v5.4 PATCH: splash showed the name twice - hide the duplicate combined span */
 .splash-words .w3 { display: none; }
+
+/* v5.5 PATCH: one consistent font per price string - card price fully in the sans body font (approved look), sheet price fully in the serif heading font */
+.card-price { font-family: var(--body-font); }
+.sheet-price .eur { font-family: var(--heading-font); }
