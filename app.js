@@ -286,14 +286,15 @@ const basketBar=document.getElementById("basket-bar");
 
 function syncVisibleViewport() {
   const vv=window.visualViewport;
-  const width=vv ? vv.width : document.documentElement.clientWidth;
-  const height=vv ? vv.height : window.innerHeight;
-  const left=vv ? vv.offsetLeft : 0;
-  const top=vv ? vv.offsetTop : 0;
-  const mobile=width<=700;
-  /* v5.6: pinch zoom shrinks the visual viewport - flag it so the sheet compacts instead of collapsing */
+  /* v5.6: pinch zoom must only magnify, never rearrange. While zoomed, freeze
+     sheet and basket-bar geometry on the layout viewport; visual-viewport
+     tracking resumes when the zoom returns to 1. */
   const zoomed=vv ? vv.scale>1.02 : false;
-  overlayRoot.classList.toggle("zoomed",zoomed);
+  const width=vv && !zoomed ? vv.width : document.documentElement.clientWidth;
+  const height=vv && !zoomed ? vv.height : window.innerHeight;
+  const left=vv && !zoomed ? vv.offsetLeft : 0;
+  const top=vv && !zoomed ? vv.offsetTop : 0;
+  const mobile=width<=700;
 
   /* Position the wrapper itself, not individual sheets.
      All sheet geometry is then relative to the visible viewport. */
