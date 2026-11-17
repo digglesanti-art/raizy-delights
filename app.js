@@ -291,6 +291,9 @@ function syncVisibleViewport() {
   const left=vv ? vv.offsetLeft : 0;
   const top=vv ? vv.offsetTop : 0;
   const mobile=width<=700;
+  /* v5.6: pinch zoom shrinks the visual viewport - flag it so the sheet compacts instead of collapsing */
+  const zoomed=vv ? vv.scale>1.02 : false;
+  overlayRoot.classList.toggle("zoomed",zoomed);
 
   /* Position the wrapper itself, not individual sheets.
      All sheet geometry is then relative to the visible viewport. */
